@@ -1,13 +1,14 @@
-import { HttpModule } from "@nestjs/axios";
-import { Module } from "@nestjs/common";
-import { JobAdapterFactory } from "src/common/job-adapter.factory";
-import { LinkedinAdapter } from "src/platforms/linkedIn/linkedin.adapter";
-
+import { HttpModule } from '@nestjs/axios';
+import { Module } from '@nestjs/common';
+import { JobAdapterFactory } from 'src/common/job-adapter.factory';
+import { LinkedinAdapter } from 'src/platforms/linkedIn/linkedin.adapter';
+import { JobController } from './job.controller';
+import { JobService } from './job.service';
 
 @Module({
-    imports:[HttpModule],
-    providers:[LinkedinAdapter, JobAdapterFactory],
-    exports:[JobAdapterFactory]
+  imports: [HttpModule],
+  controllers: [JobController],
+  providers: [LinkedinAdapter, JobAdapterFactory, JobService],
+  exports: [JobAdapterFactory],
 })
-
 export class Jobmodule {}

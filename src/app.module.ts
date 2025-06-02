@@ -1,12 +1,15 @@
 import { Module } from '@nestjs/common';
-import { AppConfigModule } from './config.module';
 import { Authmodule } from './Auth/auth.module';
 import { Jobmodule } from './job/job.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [AppConfigModule, 
-            Authmodule,
-            Jobmodule
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    Authmodule,
+    Jobmodule,
   ],
 })
 export class AppModule {}

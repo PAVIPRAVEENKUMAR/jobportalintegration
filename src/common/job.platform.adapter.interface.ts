@@ -1,12 +1,13 @@
-export interface IJobPlatformAdapter{
-    getauthurl(params: {orgId: string;redirectUri: string;scopes?: string[];state?: string;}): string;
-    exchangeCodeForToken(code:string,state?:string): Promise<any>;
-    exchangeToken(code:string):Promise<any>;
-    refreshToken(refreshToken:string):Promise<any>;
-    revokeToken(token:string):Promise<any>;
+import { JobPostResult } from 'src/common/interfaces/JobPostresult.dto';
 
-    postJob(job:any):Promise<any>;
-    updateJob(jobId:number, job:any):Promise<any>;
-    closeJob(jobId:number):Promise<any>;
-    deleteJob(jobId:number):Promise<any>;
+export interface IJobPlatformAdapter {
+  getauthurl(): string;
+  exchangeCodeForToken(code: string): Promise<any>;
+  exchangeToken?(code: string): Promise<any>;
+  refreshToken(refreshToken: string): Promise<any>;
+  revokeToken(token: string): Promise<any>;
+
+  postJob(job: any, body: any): Promise<JobPostResult>;
+  updateJob(jobId: number, job: any, body: any): Promise<JobPostResult>;
+  closeJob(jobId: number, job: any): Promise<JobPostResult>;
 }
