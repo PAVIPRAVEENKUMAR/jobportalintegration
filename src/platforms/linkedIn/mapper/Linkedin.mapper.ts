@@ -1,46 +1,74 @@
 import { CreateJobOpeningDto } from '../../../job/dto/job.dto';
-import { LinkedInJobPostPayload } from '../interface/Linkedin.interface.dto';
 
 export class LinkedInMapper {
-  static toPayload(
-    job: CreateJobOpeningDto,
-    extra: LinkedInJobPostPayload,
-  ): any {
+  static toPayload(job: CreateJobOpeningDto): any {
     return {
-      jobPostingOperationType: extra.jobPostingOperationType,
-      externalJobPostingId: extra.externalJobPostingId,
-      companyApplyUrl: extra.companyApplyUrl,
-      companyName: extra.companyName,
-      companyPageUrl: extra.companyPageUrl,
-      companyJobCode: extra.companyJobCode,
-      posterEmail: extra.posterEmail,
-      availability: extra.availability,
-      employmentStatus: extra.employmentStatus,
-      experienceLevel: extra.experienceLevel,
-      workplaceTypes: extra.workplaceTypes,
+      jobPostingOperationType: job.jobPostingOperationType,
 
       title: job.postingTitle,
-      description: job.jobDescription,
-      listedAt: new Date().toISOString(),
-
-      location: `${job.location.city}, ${job.location.state}, ${job.location.country}`,
-
-      jobType: job.jobType,
-      remoteType: job.remoteType,
-      numberOfVacancies: job.numberOfVacancies,
-
-      salary: {
-        from: job.salaryRangeFrom,
-        to: job.salaryRangeTo,
-        currency: job.currency,
-        salaryType: job.salaryType,
+      description: {
+        text: job.jobDescription,
       },
 
-      responsibilities: job.jobResponsibilities,
-      benefits: job.jobBenefits,
-      urgent: job.isUrgent,
+      location: {
+        city: job.location.city,
+        region: job.location.state,
+        country: job.location.country,
+      },
+
+      jobPostingCompany: {
+        company: job.companyPageUrl || 'urn:li:organization:12345678',
+      },
+
+      applyMethod: {
+        type: 'COMPANY_WEBSITE',
+        companyApplyUrl: job.companyApplyUrl,
+      },
+
+      employmentType: job.jobType,
+      experienceLevel: job.experienceLevel,
+      workplaceType: job.workplaceTypes,
+
       startDate: job.openingDate,
       endDate: job.targetHireDate,
+
+      compensation:
+        job.salaryRangeFrom && job.salaryRangeTo
+          ? {
+              currency: job.currency,
+              range: {
+                min: +job.salaryRangeFrom,
+                max: +job.salaryRangeTo,
+              },
+              type: job.salaryType,
+            }
+          : undefined,
+
+      skills: job.skills?.map((id) => this.mapSkillIdToName(id)),
+      jobFunctions: [this.mapIndustryToFunction(job.industry)],
+
+      postingVisibility: 'PUBLIC',
+      listedAt: new Date().toISOString(),
+      numberOfVacancies: job.numberOfVacancies,
     };
+  }
+  static mapIndustryToFunction(industry: string): string {
+    const map = {
+      IT: 'Information Technology',
+      HR: 'Human Resources',
+      SALES: 'Sales',
+      MARKETING: 'Marketing',
+    };
+    return map[industry] || 'General';
+  }
+
+  static mapSkillIdToName(skillId: number): string {
+    const skills = {
+      1: 'Node.js',
+      2: 'React',
+      3: 'NestJS',
+      4: 'MongoDB',
+    };
+    return skills[skillId] || 'General';
   }
 }

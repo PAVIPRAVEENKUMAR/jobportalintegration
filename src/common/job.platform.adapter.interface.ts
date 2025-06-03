@@ -7,7 +7,7 @@ export interface IJobPlatformAdapter {
   refreshToken(refreshToken: string): Promise<any>;
   revokeToken(token: string): Promise<any>;
 
-  postJob(job: any, body: any): Promise<JobPostResult>;
-  updateJob(jobId: number, job: any, body: any): Promise<JobPostResult>;
-  closeJob(jobId: number, job: any): Promise<JobPostResult>;
+  postJob(job: any): Promise<JobPostResult>;
+  updateJob(jobId: string, job: any): Promise<JobPostResult>;
+  closeJob(jobId: string): Promise<JobPostResult>;
 }

@@ -3,7 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import { IJobPlatformAdapter } from 'src/common/job.platform.adapter.interface';
 import { HttpService } from '@nestjs/axios';
-import { LinkedInJobPostPayload } from './interface/Linkedin.interface.dto';
 import { JobPostResult } from '../../common/interfaces/JobPostresult.dto';
 import { LinkedInMapper } from './mapper/Linkedin.mapper';
 import { CreateJobOpeningDto } from 'src/job/dto/job.dto';
@@ -22,7 +21,7 @@ export class LinkedinAdapter implements IJobPlatformAdapter {
     return this;
   }
 
-  private API_BASE = 'https://api.linkedin.com/v2';
+  private API_BASE = 'https://complex.free.beeceptor.com';
 
   private readonly tokenUrl = 'https://www.linkedin.com/oauth/v2/accessToken';
 
@@ -119,13 +118,10 @@ export class LinkedinAdapter implements IJobPlatformAdapter {
     }
   }
 
-  async postJob(
-    job: CreateJobOpeningDto,
-    body: LinkedInJobPostPayload,
-  ): Promise<JobPostResult> {
+  async postJob(job: CreateJobOpeningDto): Promise<JobPostResult> {
     const url = `${this.API_BASE}/jobPostings`;
-    const payload = LinkedInMapper.toPayload(job, body);
-
+    const payload = LinkedInMapper.toPayload(job);
+    console.log('Posting to mock LinkedIn with:', payload);
     const headers = {
       Authorization: `Bearer ${this.accesstoken}`,
       'Content-Type': 'application/json',
@@ -135,7 +131,7 @@ export class LinkedinAdapter implements IJobPlatformAdapter {
       const response = await firstValueFrom(
         this.httpService.post(url, payload, { headers }),
       );
-
+      console.log(response.data);
       return {
         externalJobId: response.data.id,
         status: 'SUCCESS',
@@ -149,12 +145,12 @@ export class LinkedinAdapter implements IJobPlatformAdapter {
   }
 
   async updateJob(
-    jobId: number,
+    jobId: string,
     job: CreateJobOpeningDto,
-    extra: LinkedInJobPostPayload,
   ): Promise<JobPostResult> {
     const url = `${this.API_BASE}/jobPostings/${jobId}`;
-    const payload = LinkedInMapper.toPayload(job, extra);
+    const payload = LinkedInMapper.toPayload(job);
+    console.log('Posting to mock LinkedIn with:', payload);
     const headers = {
       Authorization: `Bearer ${this.accesstoken}`,
       'Content-Type': 'application/json',
@@ -176,15 +172,13 @@ export class LinkedinAdapter implements IJobPlatformAdapter {
     }
   }
 
-  async closeJob(
-    jobId: number,
-    job: LinkedInJobPostPayload,
-  ): Promise<JobPostResult> {
+  async closeJob(jobId: string): Promise<JobPostResult> {
     const url = `${this.API_BASE}/jobPostings/${jobId}`;
     const payload = {
       jobPostingOperationType: 'CLOSE',
-      externalJobPostingId: job.externalJobPostingId,
+      externalJobPostingId: jobId,
     };
+    console.log('Posting to mock LinkedIn with:', payload);
     const headers = {
       Authorization: `Bearer ${this.accesstoken}`,
       'Content-Type': 'application/json',
