@@ -193,4 +193,24 @@ export class CreateJobOpeningDto {
   @IsNumber({}, { each: true })
   @ApiProperty()
   skills?: number[];
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty()
+  postUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty()
+  contactPhone?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty()
+  contactName?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ description: 'Name of the source/platform posting the job' })
+  sourceName?: string;
 }

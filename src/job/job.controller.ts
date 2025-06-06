@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Post, Put } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ProviderEnum } from 'src/common/provider.enum';
 import { JobService } from './job.service';
@@ -15,8 +15,9 @@ export class JobController {
   async createJob(
     @Param('provider') provider: ProviderEnum,
     @Body() body: CreateJobOpeningDto,
+    @Param('accesstoken') accesstoken: string,
   ) {
-    return this.jobService.createJob(provider, body);
+    return this.jobService.createJob(provider, body, accesstoken);
   }
 
   @Put('update/:provider')
@@ -25,8 +26,9 @@ export class JobController {
     @Param('provider') provider: ProviderEnum,
     @Param('jobId') jobId: string,
     @Body() jobData: UpdateJobOpeningDto,
+    @Param('accesstoken') accesstoken: string,
   ) {
-    return this.jobService.updateJob(provider, jobId, jobData);
+    return this.jobService.updateJob(provider, jobId, jobData, accesstoken);
   }
 
   @Put('close/:provider')
@@ -34,8 +36,18 @@ export class JobController {
   async closeJob(
     @Param('provider') provider: ProviderEnum,
     @Param('jobId') jobId: string,
-    @Param('accessToken') accessToken: string,
+    @Param('accesstoken') accesstoken: string,
   ) {
-    return this.jobService.closeJob(provider, jobId, accessToken);
+    return this.jobService.closeJob(provider, jobId, accesstoken);
+  }
+
+  @Delete('delete/:provider')
+  @ApiOperation({ summary: 'Delete a job on the specified platform' })
+  async deleteJob(
+    @Param('provider') provider: ProviderEnum,
+    @Param('jobId') jobId: string,
+    @Param('accesstoken') accesstoken: string,
+  ) {
+    return this.jobService.deleteJob(provider, jobId, accesstoken);
   }
 }

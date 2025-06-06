@@ -3,9 +3,9 @@ import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import { IJobPlatformAdapter } from 'src/common/job.platform.adapter.interface';
 import { HttpService } from '@nestjs/axios';
-import { JobPostResult } from '../../common/interfaces/JobPostresult.dto';
 import { LinkedInMapper } from './mapper/Linkedin.mapper';
 import { CreateJobOpeningDto } from 'src/job/dto/job.dto';
+import { JobPostResult, TokenResponse } from 'src/common/commoninterface.dto';
 
 @Injectable()
 export class LinkedinAdapter implements IJobPlatformAdapter {
@@ -38,14 +38,17 @@ export class LinkedinAdapter implements IJobPlatformAdapter {
     return url;
   }
 
-  async exchangeCodeForToken(code: string): Promise<any> {
+  async exchangeCodeForToken(
+    code: string,
+    state: string,
+  ): Promise<TokenResponse> {
     const params = new URLSearchParams();
     params.append('grant_type', 'authorization_code');
     params.append('code', code);
     params.append('redirect_uri', process.env.LINKEDIN_REDIRECT_URI!);
     params.append('client_id', process.env.LINKEDIN_CLIENT_ID!);
     params.append('client_secret', process.env.LINKEDIN_CLIENT_SECRET!);
-    params.append('state', process.env.LINKEDIN_STATE!);
+    params.append('state', state);
 
     try {
       const response = await firstValueFrom(
@@ -55,11 +58,13 @@ export class LinkedinAdapter implements IJobPlatformAdapter {
           },
         }),
       );
-      const { accessToken, expiresIn } = response.data;
+      const { access_token, refresh_token, expires_in, org_id } = response.data;
 
       return {
-        accessToken,
-        expiresIn,
+        access_token,
+        refresh_token,
+        expires_in,
+        userId: org_id,
       };
     } catch (error) {
       throw new InternalServerErrorException(
@@ -81,11 +86,12 @@ export class LinkedinAdapter implements IJobPlatformAdapter {
       }),
     );
 
-    const { accessToken, expiresIn } = response.data;
+    const { accessToken, expiresIn, refreshtoken } = response.data;
     return {
       accessToken,
       expiresIn,
-      status: 'Access token refreshed successfully',
+      refreshtoken,
+      userId: '',
     };
   }
 

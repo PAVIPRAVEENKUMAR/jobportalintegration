@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsString } from 'class-validator';
+import { IsDateString, IsEnum, IsOptional, IsString } from 'class-validator';
 import { ProviderEnum } from 'src/common/provider.enum';
 
 export class InitiateOAuthDto {
@@ -20,6 +20,10 @@ export class HandleCallbackDto {
   @ApiProperty()
   @IsString()
   code: string;
+
+  @ApiProperty()
+  @IsString()
+  state: string;
 }
 
 export class getaccesstoken {
@@ -30,4 +34,24 @@ export class getaccesstoken {
   @ApiProperty()
   @IsString()
   token: string;
+}
+
+export class UpdateTokenDto {
+  @ApiProperty()
+  @IsString()
+  accessToken: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  refreshToken?: string;
+
+  @ApiProperty()
+  @IsDateString()
+  expiresAt: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsDateString()
+  refreshTokenExpiresAt?: string;
 }

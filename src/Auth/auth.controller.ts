@@ -24,8 +24,8 @@ export class AuthController {
   @Get(':provider/callback')
   @ApiOperation({ summary: 'Handle OAuth callback from LinkedIn' })
   async handleCallback(@Query() query: HandleCallbackDto) {
-    const { provider, code } = query;
-    return this.authservice.handleCallback(provider, code);
+    const { provider, code, state } = query;
+    return this.authservice.handleCallback(provider, code, state);
   }
 
   @Get(':provider/token')
