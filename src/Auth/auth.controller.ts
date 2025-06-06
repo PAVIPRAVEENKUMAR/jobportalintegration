@@ -6,11 +6,15 @@ import {
   InitiateOAuthDto,
 } from './dto/OAuth.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { OAuthTokenService } from './oauthtoken.service';
 
 @ApiTags('complex/oauth')
 @Controller('complex/oauth')
 export class AuthController {
-  constructor(private readonly authservice: AuthService) {}
+  constructor(
+    private readonly authservice: AuthService,
+    private readonly oauthtokenservice: OAuthTokenService,
+  ) {}
 
   @Get(':provider/initiate')
   @ApiOperation({ summary: 'Initiate OAuth flow with LinkedIn' })
@@ -32,7 +36,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Get access token from LinkedIn' })
   async getaccessToken(@Query() query: getaccesstoken) {
     const { provider, token } = query;
-    return this.authservice.saveaccessToken(provider, token);
+    return this.oauthtokenservice.getLatesttoken(provider, token);
   }
 
   @Get(':provider/refreshtoken')
